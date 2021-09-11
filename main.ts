@@ -1,13 +1,13 @@
 function addZombie () {
     zombieNumber = randint(0, zombieImgs.length - 1)
     let rightImg = zombieImgs.get(zombieNumber)
-leftImg = rightImg.clone()
+    leftImg = rightImg.clone()
     leftImg.flipX()
     zombie = sprites.create(rightImg, SpriteKind.Enemy)
     zombie.follow(sierra, speed)
     sprites.setDataImage(zombie, "rightImage", rightImg)
-sprites.setDataImage(zombie, "leftImage", leftImg)
-tiles.placeOnRandomTile(zombie, sprites.castle.tileGrass1)
+    sprites.setDataImage(zombie, "leftImage", leftImg)
+    tiles.placeOnRandomTile(zombie, sprites.castle.tileGrass1)
 }
 info.onCountdownEnd(function () {
     wave += 1
@@ -15,7 +15,7 @@ info.onCountdownEnd(function () {
         game.splash("Woo! I survived!")
         game.over(true)
     }
-    game.splash("Wave " + wave + " is coming!!!!!!!!!!!!!!!!")
+    game.splash("Wave " + wave + " is coming!")
     nextWave()
 })
 function nextWave () {
@@ -42,15 +42,19 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     game.showLongText("NOOOOoooooo....", DialogLayout.Bottom)
     game.over(false)
 })
-let zImg: Image = null
+let randomSayingNumber = 0
+let randomZombie: Sprite = null
+let randomZombieNumber = 0
 let zombies: Sprite[] = []
+let zImg: Image = null
+let zombies2: Sprite[] = []
 let wave = 0
 let speed = 0
-let zombie: Sprite = null
-let zombieImgs: Image[] = []
-let mySprite = null
-let zombieNumber = 0
 let leftImg: Image = null
+let zombieNumber = 0
+let mySprite = null
+let zombieImgs: Image[] = []
+let zombie: Sprite = null
 speed = 12.5
 zombieImgs = [
 img`
@@ -356,14 +360,23 @@ img`
     .....ccc.....e......
     `
 ]
+let zombieSayings = [
+    "Grrrr!",
+    "Brains...",
+    "We gonna eat your brains",
+    "Aaargh!",
+    "Boooo!",
+    "You no get away from us, Sierra!",
+    "We gonna get you!"
+]
 scene.setBackgroundColor(7)
 tiles.setTilemap(tilemap`level_1`)
 game.showLongText("Help me get away from the zombies!", DialogLayout.Bottom)
 wave = 1
 nextWave()
 game.onUpdate(function () {
-    zombies = sprites.allOfKind(SpriteKind.Enemy)
-    for (let z of zombies) {
+    zombies2 = sprites.allOfKind(SpriteKind.Enemy)
+    for (let z of zombies2) {
         zImg = z.image
         if (z.vx > 0) {
             z.setImage(sprites.readDataImage(z, "rightImage"))
@@ -371,4 +384,15 @@ game.onUpdate(function () {
             z.setImage(sprites.readDataImage(z, "leftImage"))
         }
     }
+})
+game.onUpdateInterval(1000, function () {
+    zombies = sprites.allOfKind(SpriteKind.Enemy)
+    randomZombieNumber = randint(0, zombies.length - 1)
+    randomZombie = zombies[randomZombieNumber]
+    randomSayingNumber = randint(0, zombieSayings.length - 1)
+    // let randomSaying = zombieSayings[randomSayingNumber]
+    randomZombie.say(zombieSayings[randomSayingNumber], 2000)
+})
+forever(function () {
+    music.playMelody("B A G A G F A C5 ", 120)
 })
